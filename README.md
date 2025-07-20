@@ -1,160 +1,179 @@
-# Scanner Web Interface
+# Kodak i2000 Scanner Web Interface
 
-Eine einfache Weboberfläche zum Scannen von Dokumenten über einen Netzwerk-Scanner.
+## Übersicht
 
-## Funktionen
+Dieses Projekt besteht aus zwei Hauptkomponenten:
 
-- Scan von Dokumenten über eine benutzerfreundliche Weboberfläche
-- Unterstützung für verschiedene Auflösungen (150, 300, 600, 1200 DPI)
-- Farbmodus-Auswahl (Farbe oder Schwarz/Weiß)
-- Duplex-Scanning (Vorder- und Rückseite)
-- Automatische PDF-Erstellung
+1. **Kodak Alaris i2000 Scanner Treiber** - Ermöglicht die Kommunikation mit dem Scanner
+2. **Web-Interface** - Einfache Benutzeroberfläche zum Scannen von Dokumenten über den Browser
 
-## Voraussetzungen
+## Systemanforderungen
 
-- Linux-System:
-  - **Empfohlen**: Ubuntu 22.04 LTS (beste Kompatibilität)
-  - **Eingeschränkt unterstützt**: Ubuntu 24.04 LTS (kann zu Problemen führen)
-  - **Nicht unterstützt**: Ubuntu 25.04 und neuere Versionen
+- Linux-Betriebssystem (getestet mit Ubuntu, Debian)
 - Python 3.6 oder höher
-- SANE (Scanner Access Now Easy)
-- Unterstützter Scanner (z.B. Kodak i2000)
+- Scanner Kodak Alaris i2400/i2600/i2800 Serie
+- Benutzer mit sudo-Rechten
+- Internetzugang für die Installation von Abhängigkeiten
 
 ## Installation
 
-Die Installation erfolgt in zwei separaten Schritten:
-1. **Treiberinstallation**: Installation der Scanner-Treiber (je nach Scannermodell)
-2. **Web-Interface Installation**: Installation der Weboberfläche
+### 1. Treiberinstallation
 
-### Teil 1: Treiberinstallation
+Die Treiber für den Kodak Scanner müssen zuerst installiert werden, bevor das Web-Interface funktionieren kann.
 
-#### 1. SANE-Backend installieren
+#### 1.1 Entpacken der Treiber
 
 ```bash
-sudo apt update
-sudo apt install -y sane sane-utils libsane-dev
+cd /pfad/zu/scanner/treiber
+tar -xvzf Kodak_i2000_Linux_Driver.tar.gz
+# oder falls als ZIP-Datei
+unzip Kodak_i2000_Linux_Driver.zip
+cd Kodak_i2000_Linux_Driver
 ```
 
-#### 2. Kodak i2000 Treiber installieren (falls zutreffend)
+#### 1.2 Vorbereitung
 
-WICHTIG: Führen Sie die folgenden Schritte in der angegebenen Reihenfolge aus!
+Stellen Sie sicher, dass der Scanner **ausgeschaltet** oder **nicht angeschlossen** ist, bevor Sie mit der Installation beginnen.
+
+#### 1.3 Treiberinstallation
+
+Die Treiberinstallation erfolgt mit folgendem Befehl:
 
 ```bash
-# 1. Entpacken der Kodak-Treiber (falls nicht bereits geschehen)
-tar -xzf kodak_drivers.tgz
-cd kodak_drivers
-
-# 2. Ausführen des Treiber-Installationsskripts
 sudo ./setup
-
-# 3. Nach der Treiberinstallation neustarten
-sudo reboot
 ```
 
-HINWEIS: Der `setup`-Befehl oben ist das Scanner-Treiberinstallationsskript und NICHT die Web-Interface-Installation.
+Während der Installation werden Sie durch mehrere Schritte geführt:
 
-#### 3. Scanner-Treiber überprüfen
+1. Akzeptieren der Lizenzvereinbarung (geben Sie "Y" ein)
+2. Bestätigung der Installation von Abhängigkeiten (falls erforderlich)
+   - QT v3.x (für die TWAIN-Benutzeroberfläche)
+   - Mono und Mono-WinForms (für die TWAIN-Benutzeroberfläche)
+   - SANE-Treiber (für SANE-kompatible Anwendungen)
+3. Abschließen der Installation
 
-Nach der Installation der Treiber und dem Neustart können Sie überprüfen, ob Ihr Scanner erkannt wird:
+Der Installationsprozess installiert folgende Komponenten in der richtigen Reihenfolge:
+- libudev0 (falls erforderlich)
+- OpenUSB
+- TWAIN Data Source Manager
+- Kodak Scanner-Treiberpakete
+
+#### 1.4 Treiberüberprüfung
+
+Nach der Installation können Sie überprüfen, ob die Treiber korrekt installiert wurden:
 
 ```bash
+# Überprüfung des SANE-Treibers
 scanimage -L
+
+# Sollte etwas wie folgendes anzeigen:
+# device 'kds_i2000:i2000' is a Kodak i2400 Scanner
 ```
 
-Diese Ausgabe sollte Ihren Scanner auflisten, z.B.:
-```
-device 'kds_i2000:i2000' is a Kodak i2000 scanner
-```
+### 2. Web-Interface Installation
 
-#### 4. Benutzerrechte für Scanner
-
-Stellen Sie sicher, dass Ihr Benutzer Zugriff auf den Scanner hat:
+Nachdem die Treiber erfolgreich installiert wurden, können Sie das Web-Interface einrichten:
 
 ```bash
-sudo usermod -a -G scanner $USER
+cd /pfad/zu/scanner/webinterface
+sudo ./install.sh
 ```
 
-Melden Sie sich ab und wieder an, damit die Änderungen wirksam werden.
-
-### Teil 2: Web-Interface Installation
-
-#### 1. Dateien herunterladen
-
-Laden Sie die Projektdateien herunter und extrahieren Sie sie in ein Verzeichnis Ihrer Wahl.
-
-#### 2. Installation ausführen
-
-Navigieren Sie zum Projektverzeichnis und führen Sie das Installationsskript aus:
-
-```bash
-cd /pfad/zum/projektverzeichnis
-chmod +x install.sh
-./install.sh
-```
-
-**Hinweis**: Das Installationsskript für das Web-Interface installiert keine Scanner-Treiber. Die Treiber müssen vorher wie in Teil 1 beschrieben installiert werden.
-
-Die Installation führt folgende Schritte aus:
-- Installation der benötigten Python-Pakete
-- Erstellung einer Python-Umgebung
-- Installation der Python-Abhängigkeiten
-- Einrichtung als Systemdienst
-
-#### 3. Überprüfen der Installation
-
-Nach der Installation sollte der Dienst automatisch gestartet werden. Sie können den Status überprüfen mit:
-
-```bash
-sudo systemctl status scanner-web
-```
+Die Installation:
+1. Erstellt eine Python-Umgebung
+2. Installiert die notwendigen Python-Abhängigkeiten (Flask, img2pdf)
+3. Richtet einen systemd-Service ein, der das Web-Interface automatisch startet
 
 ## Verwendung
 
-1. Öffnen Sie einen Webbrowser und navigieren Sie zu `http://localhost:5000` (oder die IP-Adresse des Servers)
-2. Wählen Sie die gewünschten Scan-Einstellungen aus:
-   - Auflösung (DPI)
-   - Farbmodus
-   - Beidseitiges Scannen (wenn gewünscht)
-3. Klicken Sie auf "Scan starten"
-4. Legen Sie Ihre Dokumente in den Dokumenteneinzug des Scanners
-5. Die gescannten Dokumente werden als PDF im Verzeichnis `/mnt/docs` gespeichert
+### Web-Interface
+
+Nach erfolgreicher Installation ist das Web-Interface unter folgender Adresse erreichbar:
+
+```
+http://localhost:5000
+```
+
+Falls Sie von einem anderen Gerät aus darauf zugreifen möchten, ersetzen Sie "localhost" durch die IP-Adresse des Computers.
+
+Das Interface bietet folgende Funktionen:
+- **Auflösung (DPI)**: Wählen Sie zwischen 150, 300, 600 oder 1200 DPI
+- **Farbmodus**: Farbe oder Schwarz/Weiß
+- **Beidseitig scannen**: Aktivieren Sie diese Option für Duplex-Scans
+
+Nach dem Scannen wird automatisch eine PDF-Datei erstellt und im Ordner `/mnt/docs` gespeichert.
+
+### Servicemanagement
+
+Der Webservice kann über folgende Befehle verwaltet werden:
+
+```bash
+# Status überprüfen
+sudo systemctl status scanner-web
+
+# Service neustarten
+sudo systemctl restart scanner-web
+
+# Service stoppen
+sudo systemctl stop scanner-web
+
+# Logs anzeigen
+sudo journalctl -u scanner-web -f
+```
 
 ## Fehlerbehebung
 
 ### Scanner wird nicht erkannt
 
-1. Überprüfen Sie, ob der Scanner eingeschaltet und angeschlossen ist
-2. Führen Sie `scanimage -L` aus, um zu prüfen, ob der Scanner erkannt wird
-3. Prüfen Sie die Logs mit `sudo journalctl -u scanner-web -f`
+1. Stellen Sie sicher, dass der Scanner eingeschaltet und korrekt angeschlossen ist
+2. Überprüfen Sie die USB-Verbindung
+3. Überprüfen Sie, ob der Benutzer in der "scanner"-Gruppe ist:
+   ```bash
+   sudo usermod -a -G scanner $USER
+   # Abmelden und wieder anmelden, damit die Änderungen wirksam werden
+   ```
+4. Überprüfen Sie, ob die Scanner-Treiber korrekt installiert sind:
+   ```bash
+   scanimage -L
+   ```
 
-### Dienst startet nicht
+### Web-Interface ist nicht erreichbar
 
-1. Überprüfen Sie die Logs mit `sudo journalctl -u scanner-web -f`
-2. Stellen Sie sicher, dass alle Abhängigkeiten installiert sind
-3. Versuchen Sie, den Dienst manuell neu zu starten: `sudo systemctl restart scanner-web`
+1. Überprüfen Sie, ob der Service läuft:
+   ```bash
+   sudo systemctl status scanner-web
+   ```
+2. Überprüfen Sie die Firewall-Einstellungen, um sicherzustellen, dass Port 5000 freigegeben ist
+3. Überprüfen Sie die Logs auf Fehler:
+   ```bash
+   sudo journalctl -u scanner-web -f
+   ```
 
-### Scannen funktioniert nicht
+### Fehlgeschlagene Scans
 
-1. Stellen Sie sicher, dass der Scanner im ADF-Modus (Automatischer Dokumenteneinzug) betriebsbereit ist
-2. Überprüfen Sie, ob der Benutzer in der Scanner-Gruppe ist: `groups $USER`
-3. Stellen Sie sicher, dass das Ausgabeverzeichnis existiert und beschreibbar ist
+1. Stellen Sie sicher, dass Papier korrekt ins Dokumenteneinzugsfach eingelegt ist
+2. Überprüfen Sie, ob der Ausgabeordner `/mnt/docs` existiert und Schreibrechte hat
+3. Überprüfen Sie die Logs des Web-Interfaces
 
-## Dienstmanagement
+## Zusätzliche Hinweise
 
-- Dienst starten: `sudo systemctl start scanner-web`
-- Dienst stoppen: `sudo systemctl stop scanner-web`
-- Dienst neustarten: `sudo systemctl restart scanner-web`
-- Logs anzeigen: `sudo journalctl -u scanner-web -f`
+- Die gescannten Dokumente werden unter `/mnt/docs` mit dem Namensformat `scan_YYYY-MM-DD_HH-MM-SS.pdf` gespeichert
+- Temporäre Scan-Dateien werden unter `/tmp/scans` gespeichert und nach der PDF-Erstellung gelöscht
+- Die Einstellungen für Auflösung, Farbmodus und Duplex werden im Browser-Speicher gespeichert
 
 ## Deinstallation
 
-Um das Web-Interface zu deinstallieren:
+Um die Software zu deinstallieren:
 
 ```bash
+# Web-Interface Service entfernen
 sudo systemctl stop scanner-web
 sudo systemctl disable scanner-web
 sudo rm /etc/systemd/system/scanner-web.service
 sudo systemctl daemon-reload
-```
 
-Löschen Sie anschließend das Projektverzeichnis.
+# Treiber deinstallieren (je nach Distribution)
+sudo apt remove --purge libopenusb twaindsm kodak-i2000
+# oder
+sudo rpm -e libopenusb twaindsm kodak-i2000
+```
