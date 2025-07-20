@@ -12,7 +12,10 @@ Eine einfache Weboberfläche zum Scannen von Dokumenten über einen Netzwerk-Sca
 
 ## Voraussetzungen
 
-- Linux-System (getestet mit Ubuntu/Debian)
+- Linux-System:
+  - **Empfohlen**: Ubuntu 22.04 LTS (beste Kompatibilität)
+  - **Eingeschränkt unterstützt**: Ubuntu 24.04 LTS (kann zu Problemen führen)
+  - **Nicht unterstützt**: Ubuntu 25.04 und neuere Versionen
 - Python 3.6 oder höher
 - SANE (Scanner Access Now Easy)
 - Unterstützter Scanner (z.B. Kodak i2000)
