@@ -20,16 +20,22 @@ Eine einfache Weboberfläche zum Scannen von Dokumenten über einen Netzwerk-Sca
 - SANE (Scanner Access Now Easy)
 - Unterstützter Scanner (z.B. Kodak i2000)
 
-## Treiberinstallation
+## Installation
 
-### 1. SANE-Backend installieren
+Die Installation erfolgt in zwei separaten Schritten:
+1. **Treiberinstallation**: Installation der Scanner-Treiber (je nach Scannermodell)
+2. **Web-Interface Installation**: Installation der Weboberfläche
+
+### Teil 1: Treiberinstallation
+
+#### 1. SANE-Backend installieren
 
 ```bash
 sudo apt update
 sudo apt install -y sane sane-utils libsane-dev
 ```
 
-### 2. Kodak i2000 Treiber installieren (falls zutreffend)
+#### 2. Kodak i2000 Treiber installieren (falls zutreffend)
 
 Wenn Sie einen Kodak-Scanner verwenden:
 
@@ -39,14 +45,14 @@ wget https://www.kodak.com/docimaging/drivers/linux_drivers.tgz -O kodak_drivers
 tar -xzf kodak_drivers.tgz
 cd kodak_drivers
 
-# Installation der Treiber
+# Installation der Treiber (Hinweis: Dies ist das Installationsskript der Treiber, nicht das Web-Interface)
 sudo ./install.sh
 
 # Nach der Installation neustarten
 sudo reboot
 ```
 
-### 3. Scanner-Treiber überprüfen
+#### 3. Scanner-Treiber überprüfen
 
 Nach der Installation der Treiber und dem Neustart können Sie überprüfen, ob Ihr Scanner erkannt wird:
 
@@ -59,7 +65,7 @@ Diese Ausgabe sollte Ihren Scanner auflisten, z.B.:
 device 'kds_i2000:i2000' is a Kodak i2000 scanner
 ```
 
-### 4. Benutzerrechte für Scanner
+#### 4. Benutzerrechte für Scanner
 
 Stellen Sie sicher, dass Ihr Benutzer Zugriff auf den Scanner hat:
 
@@ -69,13 +75,13 @@ sudo usermod -a -G scanner $USER
 
 Melden Sie sich ab und wieder an, damit die Änderungen wirksam werden.
 
-## Installation des Web-Interfaces
+### Teil 2: Web-Interface Installation
 
-### 1. Dateien herunterladen
+#### 1. Dateien herunterladen
 
 Laden Sie die Projektdateien herunter und extrahieren Sie sie in ein Verzeichnis Ihrer Wahl.
 
-### 2. Installation ausführen
+#### 2. Installation ausführen
 
 Navigieren Sie zum Projektverzeichnis und führen Sie das Installationsskript aus:
 
@@ -85,13 +91,15 @@ chmod +x install.sh
 ./install.sh
 ```
 
+**Hinweis**: Das Installationsskript für das Web-Interface installiert keine Scanner-Treiber. Die Treiber müssen vorher wie in Teil 1 beschrieben installiert werden.
+
 Die Installation führt folgende Schritte aus:
-- Installation der benötigten Pakete
+- Installation der benötigten Python-Pakete
 - Erstellung einer Python-Umgebung
 - Installation der Python-Abhängigkeiten
 - Einrichtung als Systemdienst
 
-### 3. Überprüfen der Installation
+#### 3. Überprüfen der Installation
 
 Nach der Installation sollte der Dienst automatisch gestartet werden. Sie können den Status überprüfen mit:
 
