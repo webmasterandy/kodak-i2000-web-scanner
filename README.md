@@ -37,20 +37,21 @@ sudo apt install -y sane sane-utils libsane-dev
 
 #### 2. Kodak i2000 Treiber installieren (falls zutreffend)
 
-Wenn Sie einen Kodak-Scanner verwenden:
+WICHTIG: Führen Sie die folgenden Schritte in der angegebenen Reihenfolge aus!
 
 ```bash
-# Herunterladen der Kodak-Treiber (prüfen Sie die aktuellste Version auf der Herstellerwebseite)
-wget https://www.kodak.com/docimaging/drivers/linux_drivers.tgz -O kodak_drivers.tgz
+# 1. Entpacken der Kodak-Treiber (falls nicht bereits geschehen)
 tar -xzf kodak_drivers.tgz
 cd kodak_drivers
 
-# Installation der Treiber (Hinweis: Dies ist das Installationsskript der Treiber, nicht das Web-Interface)
-sudo ./install.sh
+# 2. Ausführen des Treiber-Installationsskripts
+sudo ./setup
 
-# Nach der Installation neustarten
+# 3. Nach der Treiberinstallation neustarten
 sudo reboot
 ```
+
+HINWEIS: Der `setup`-Befehl oben ist das Scanner-Treiberinstallationsskript und NICHT die Web-Interface-Installation.
 
 #### 3. Scanner-Treiber überprüfen
 
